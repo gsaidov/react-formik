@@ -1,5 +1,6 @@
 import React from "react";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 
 // Extracted initial values
 const initialValues = {
@@ -8,31 +9,13 @@ const initialValues = {
   title: "",
 };
 
-// We build a custom validation function. This must return an object
-// whose keys are symmetrical to our values/initialValues
-
-const validate = (values) => {
-  const errors = {}; // first define errors object
-
-  //below define conditions
-  if (!values.name) {
-    errors.name = "Required";
-  } else if (values.name.length > 25) {
-    errors.name = "Must be 25 characters or less";
-  }
-
-  if (!values.email) {
-    errors.email = "Required";
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = "Invalid email format";
-  }
-
-  if (!values.title) {
-    errors.title = "Required";
-  }
-
-  return errors;
-};
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .max(25, "Must be 25 characters or less")
+    .required("Required"),
+  email: Yup.string().email("Invalid email address").required("Required"),
+  title: Yup.string().required("Required"),
+});
 
 // Extracted onSubmit function
 const onSubmit = (values) => {
@@ -42,7 +25,8 @@ const onSubmit = (values) => {
 function BlogForm(props) {
   const formik = useFormik({
     initialValues,
-    validate,
+    // validate,
+    validationSchema,
     onSubmit,
   });
   // console.log(formik.errors);
